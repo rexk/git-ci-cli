@@ -3,16 +3,22 @@ name: Rust
 on: [push]
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-16.04, macOS-latest]
-
+  build(ubuntu):
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - name: Build
       run: cargo build --verbose
-      
-    - name: Run tests
-      run: cargo test --verbose
+  build(osx):
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: install_dependencies
+        run: |
+          brew install SDL2
+          brew install rustup
+          rustup-init -y --default-toolchain stable
+      - name: Build
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          cargo build
